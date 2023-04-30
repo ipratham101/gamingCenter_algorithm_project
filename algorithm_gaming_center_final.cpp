@@ -13,61 +13,61 @@ using namespace std;
 class neighbour
 {
 public:
-	string name;
-	int distance;
+string name;
+int distance;
 
-	neighbour(string name,int distance)
-	{
-		this->name=name;
-		this->distance=distance;
-	}
+neighbour(string name,int distance)
+{
+this->name=name;
+this->distance=distance;
+}
 };
 class graph{
 public:
-	map<string,list<neighbour>> neighbourMap;
-	void addEdge(string u,string v,int w)
-	{
-	
-		neighbourMap[u].push_back(neighbour(v,w));
-		neighbourMap[v].push_back(neighbour(u,w));
-	}
-	void print()
-	{
-		for(auto x:neighbourMap)
-		{
-			list<neighbour> neighbourList=x.second;
-			cout<<x.first<<": ";
-			for(auto y:neighbourList)
-			{
-				cout<<y.name<<" "<<y.distance<<";";
-			}
-			cout<<endl<<endl;
+map<string,list<neighbour>> neighbourMap;
+void addEdge(string u,string v,int w)
+{
 
-		}
-	}
+neighbourMap[u].push_back(neighbour(v,w));
+neighbourMap[v].push_back(neighbour(u,w));
+}
+void print()
+{
+for(auto x:neighbourMap)
+{
+list<neighbour> neighbourList=x.second;
+cout<<x.first<<": ";
+for(auto y:neighbourList)
+{
+cout<<y.name<<" "<<y.distance<<";";
+}
+cout<<endl<<endl;
+
+}
+}
 };
 void floydWarshall(vector<vector<long long int>>& nums)
 {
-	for(int k=0;k<9;k++)
-	{
-		for(int i=0;i<9;i++)
-		{
-			for(int j=0;j<9;j++)
-			{
-				if(nums[i][k]+nums[k][j]<nums[i][j])
-				{
-					nums[i][j]=nums[i][k]+nums[k][j];
-				}
-			}
-		}
-	}
-	
-	// for(int i=0;i<9;i++)
-	// {
-	// 	for(int j=0;j<9;j++)
-	// 		cout<<nums[i][j]<<" ";
-	// 	cout<<endl;
-	// }
+for(int k=0;k<9;k++)
+{
+for(int i=0;i<9;i++)
+{
+for(int j=0;j<9;j++)
+{
+if(nums[i][k]+nums[k][j]<nums[i][j])
+{
+nums[i][j]=nums[i][k]+nums[k][j];
+}
+}
+}
+}
+
+// for(int i=0;i<9;i++)
+// {
+// 	for(int j=0;j<9;j++)
+// 		cout<<nums[i][j]<<" ";
+// 	cout<<endl;
+// }
 }
 
 //Snakes & Ladders
@@ -123,10 +123,11 @@ void Graph::shortestPath(int s, int dest, int path[])
     int curr = dest;
     while (curr != -1)
     {
-        cout << curr << " ";
+        cout << curr << " " << "<-";
         curr = path[curr];
     }
-    cout << endl;
+    cout << "Start" << endl;
+
 }
 
 
@@ -166,67 +167,55 @@ bool isValid(int grid[N][N], int row, int col, int num) {
     return true;
 }
 // Create a vector to store the empty cells in the grid
-bool solveSudoku(int grid[N][N]){  
-	vector<pair<int, int>> emptyCells;
-	for (int i = 0; i < N; i++)
-	{
-		for (int j = 0; j < N; j++)
-		{
-			if (grid[i][j] == 0)
-			{
-				emptyCells.push_back(make_pair(i, j));
-			}
-		}
-	}
-	// Keep track of the number of empty cells before applying the algorithm
-	int numEmptyCells = emptyCells.size();
-	// Keep iterating until no more empty cells can be filled
-	while (emptyCells.size() > 0)
-	{
-		// Iterate over all the empty cells
-		for (int i = 0; i < emptyCells.size(); i++)
-		{
-			int row = emptyCells[i].first;
-			int col = emptyCells[i].second;
-			// Keep track of the possible numbers that can be filled in the cell
-			vector<int> possibleNumbers;
-			for (int num = 1; num <= N; num++)
-			{
-				if (isValid(grid, row, col, num))
-				{
-				    possibleNumbers.push_back(num);
-				}
-			}
-			// If there is only one possible number, fill it in the cell
-			if (possibleNumbers.size() == 1) {
-				grid[row][col] = possibleNumbers[0];
-				emptyCells.erase(emptyCells.begin() + i);
-				break;
-			}
-		}
-		// If no progress has been made, stop iterating
-		if (emptyCells.size() == numEmptyCells)
-		{
-			return false;
-		}
-		numEmptyCells = emptyCells.size();
-	}
-	// If all the empty cells have been filled, the Sudoku puzzle has been solved
-	return true;
+bool solveSudoku(int grid[N][N]) {
+    // Find the next empty cell
+    int row, col;
+    bool foundEmptyCell = false;
+    for (row = 0; row < N; row++) {
+        for (col = 0; col < N; col++) {
+            if (grid[row][col] == 0) {
+                foundEmptyCell = true;
+                break;
+            }
+        }
+        if (foundEmptyCell) {
+            break;
+        }
+    }
+
+    // If there are no more empty cells, the puzzle is solved
+    if (!foundEmptyCell) {
+        return true;
+    }
+
+    // Try filling the empty cell with each possible number
+    for (int num = 1; num <= N; num++) {
+        if (isValid(grid, row, col, num)) {
+            grid[row][col] = num;
+            if (solveSudoku(grid)) {
+                return true;
+            }
+            grid[row][col] = 0;
+        }
+    }
+
+    // If none of the numbers worked, backtrack
+    return false;
 }
+
 void playSudoku(int grid[N][N]){
-	cout << "Initial Sudoku grid:" << endl;
-	printGrid(grid);
-	bool solved = solveSudoku(grid);
-	if (solved) {
-		cout << "Solved Sudoku grid:" << endl;
-		printGrid(grid);
-	}else{
-		cout << "Unable to solve Sudoku grid" << endl;
-	}
+cout << "Initial Sudoku grid:" << endl;
+printGrid(grid);
+bool solved = solveSudoku(grid);
+if (solved) {
+cout << "Solved Sudoku grid:" << endl;
+printGrid(grid);
+}else{
+cout << "Unable to solve Sudoku grid" << endl;
+}
 }
 void playSL(){
-	// Initialize game board with ladders and snakes
+// Initialize game board with ladders and snakes
     int board[101];
     for (int i = 1; i <= 100; i++) {
         board[i] = i;
@@ -259,180 +248,196 @@ void playSL(){
         }
     }
 
+   cout<< "You are currently at position 0" << endl << "Enter '0' to roll your dice!!" << endl ;
+    int dice_roll = 1;
+    do {
+        cin >> dice_roll;
+        if (dice_roll != 0) {
+            cout << "Oops! Please enter 0 to roll your dice!" << endl;
+        }
+    } while (dice_roll != 0);
+    
+    // Random Dice number generator
+    srand(time(nullptr));
+    int dice_value = (rand() % 6) + 1;
+    
+    cout << "The number which appeared on your dice was " << dice_value << ". You are currently at position " << dice_value << endl;
+    cout << "Your shortest path to victory is:" << endl;
     // Find shortest path from start to end
     int path[101];
     for (int i = 0; i <= 100; i++) {
         path[i] = -1;
     }
 
-    g.shortestPath(1, 100, path); 
+    g.shortestPath(dice_value, 100, path);
+ 
 }
 
 void mainProj(graph g,vector<vector<long long>> wMatrix,string src,int energy)
 {
-	g.print();
+g.print();
 
-	cout<<"You have "<<energy<<" energy points!!"<<endl;
-	cout<<"Energy can be recharged at :"<<endl;
-	cout<<"Recharge Center: 50 Energy points"<<endl;
-	cout<<"Cafe: 25 Energy points"<<endl;
-	
-	vector<string> searching{"Home","Cafe","Gaming_Center1","Shopping_Complex","Recharge_Center","Cinema","Food_Court","Gaming_Center2","Parking"};
-	int pathDist=0;
-	cout<<endl<<"You are at "<<src<<" !!";
-	cout<<endl<<"Where do you want to go?";
-	fflush(stdin);
-	string dest;
-	cin>>dest;
-	while(find(searching.begin(),searching.end(),dest)==searching.end()){
-		cout<<endl<<"Wrong input!! Enter again:";
-		cin>>dest;
-	}
-	cout<<"Enter your path:";
-	string place;
-	string prev=src;
-	cin>>place;
-	while(place!=dest)
-	{
-		while(find(searching.begin(),searching.end(),place)==searching.end()){
-			cout<<endl<<"Wrong input!! Enter again:";
-			cin>>place;
-		}
-		// path.push_back(place);
-		list<neighbour> neighbourList=g.neighbourMap[place];
-		for(auto x:neighbourList)
-		{
-			if(x.name==prev)
-			{
-				pathDist+=x.distance;
-				break;
-			}
-		}
-		prev=place;
-		cin>>place;
-	}
+cout<<"You have "<<energy<<" energy points!!"<<endl;
+cout<<"Energy can be recharged at :"<<endl;
+cout<<"Recharge Center: 50 Energy points"<<endl;
+cout<<"Cafe: 25 Energy points"<<endl;
 
-	//calculating path distance
-	list<neighbour> neighbourList=g.neighbourMap[place];
-	for(auto x:neighbourList)
-	{
-		if(x.name==prev)
-		{
-			pathDist+=x.distance;
-			break;
-		}
-	}
-	//GAMES INITIALIZATION
-	int grid[N][N] = {
-		{0, 0, 3, 0, 2, 0, 6, 0, 0},
-		{9, 0, 0, 3, 0, 5, 0, 0, 1},
-		{0, 0, 1, 8, 0, 6, 4, 0, 0},
-		{0, 0, 8, 1, 0, 2, 9, 0, 0},
-		{7, 0, 0, 0, 0, 0, 0, 0, 8},
-		{0, 0, 6, 7, 0, 8, 2, 0, 0},
-		{0, 0, 2, 6, 0, 9, 5, 0, 0},
-		{8, 0, 0, 2, 0, 3, 0, 0, 9},
-		{0, 0, 5, 0, 1, 0, 3, 0, 0}
-	};
-	int index; //dest's index
-	int ind; //src's index
-	//finding where is place in vector of string and storing in the
-	//variable index
-	for(int i=0; i<searching.size(); i++){
-	    if(searching[i] == dest){
-	        index = i;
-	    }
-	    if(searching[i]==src){
-	    	ind=i;
-	    }
-	}
-	int energyCons=0;
-	if(pathDist==wMatrix[ind][index])
-	{
-		energyCons=pathDist/10;
-	}
-	else
-	{
-		energyCons=2*(pathDist/10);
-	}
-	if(energyCons>energy)
-	{
-		cout<<"You have exhausted your energy!!!";
-		return;
-	}
-	energy-=energyCons;
-	cout<<"Your path's Distance is: "<<pathDist;
-	cout<<endl<<"Shortest distance from "<<src<<"to "<<place<<" is: "<<wMatrix[ind][index]<<endl;
-	if(dest == "Gaming_Center1"||dest=="Gaming_Center2")
-	{
+vector<string> searching{"Home","Cafe","Gaming_Center1","Shopping_Complex","Recharge_Center","Cinema","Food_Court","Gaming_Center2","Parking"};
+int pathDist=0;
+cout<<endl<<"You are at "<<src<<" !!";
+cout<<endl<<"Where do you want to go?";
+fflush(stdin);
+string dest;
+cin>>dest;
+while(find(searching.begin(),searching.end(),dest)==searching.end()){
+cout<<endl<<"Wrong input!! Enter again:";
+cin>>dest;
+}
+cout<<"Enter your path:";
+string place;
+string prev=src;
+cin>>place;
+while(place!=dest)
+{
+while(find(searching.begin(),searching.end(),place)==searching.end()){
+cout<<endl<<"Wrong input!! Enter again:";
+cin>>place;
+}
+// path.push_back(place);
+list<neighbour> neighbourList=g.neighbourMap[place];
+for(auto x:neighbourList)
+{
+if(x.name==prev)
+{
+pathDist+=x.distance;
+break;
+}
+}
+prev=place;
+cin>>place;
+}
+
+//calculating path distance
+list<neighbour> neighbourList=g.neighbourMap[place];
+for(auto x:neighbourList)
+{
+if(x.name==prev)
+{
+pathDist+=x.distance;
+break;
+}
+}
+//GAMES INITIALIZATION
+int grid[N][N] = {
+{0, 0, 3, 0, 2, 0, 6, 0, 0},
+{9, 0, 0, 3, 0, 5, 0, 0, 1},
+{0, 0, 1, 8, 0, 6, 4, 0, 0},
+{0, 0, 8, 1, 0, 2, 9, 0, 0},
+{7, 0, 0, 0, 0, 0, 0, 0, 8},
+{0, 0, 6, 7, 0, 8, 2, 0, 0},
+{0, 0, 2, 6, 0, 9, 5, 0, 0},
+{8, 0, 0, 2, 0, 3, 0, 0, 9},
+{0, 0, 5, 0, 1, 0, 3, 0, 0}
+};
+int index; //dest's index
+int ind; //src's index
+//finding where is place in vector of string and storing in the
+//variable index
+for(int i=0; i<searching.size(); i++){
+    if(searching[i] == dest){
+        index = i;
+    }
+    if(searching[i]==src){
+    	ind=i;
+    }
+}
+int energyCons=0;
+if(pathDist==wMatrix[ind][index])
+{
+energyCons=pathDist/10;
+}
+else
+{
+energyCons=2*(pathDist/10);
+}
+if(energyCons>energy)
+{
+cout<<"You have exhausted your energy!!!";
+return;
+}
+energy-=energyCons;
+cout<<"Your path's Distance is: "<<pathDist;
+cout<<endl<<"Shortest distance from "<<src<<"to "<<place<<" is: "<<wMatrix[ind][index]<<endl;
+if(dest == "Gaming_Center1"||dest=="Gaming_Center2")
+{
      	char input;
-	    cout<<"What you want to play?"<<endl;
-	    cout<<"Sudoku Or Snake and Ladder"<<endl;
-	    cout<<"press a for Sudoku and b for Snake and Ladder"<<endl;
-	   	cin>>input;
-	   	if(input == 'a')
-	   	{
-	       playSudoku(grid);
-	   	}
-	   	else if(input=='b')
-	   	{
-	   		playSL();
-	   	}
-	   	src=dest;
-	   	mainProj(g,wMatrix,src,energy);
-	}
-	else if(dest=="Cafe")
-	{
-		energy+=25;
-		src="Cafe";
-		mainProj(g,wMatrix,src,energy);
-	}
-	else if(dest=="Recharge_Center")
-	{
-		energy+=50;
-		src="Recharge Center";
-		mainProj(g,wMatrix,src,energy);
-	}
-	else if(dest=="Parking"||dest=="Home")
-	{
-		cout<<"Thank you for playing!!";
-		return;
-	}
-	else
-	{
-		src=dest;
-		mainProj(g,wMatrix,src,energy);
-	}
+    cout<<"What you want to play?"<<endl;
+    cout<<"Sudoku Or Snake and Ladder"<<endl;
+    cout<<"press a for Sudoku and b for Snake and Ladder"<<endl;
+   	cin>>input;
+   	if(input == 'a')
+   	{
+       playSudoku(grid);
+   	}
+   	else if(input=='b')
+   	{
+   		playSL();
+   	}
+   	src=dest;
+   	mainProj(g,wMatrix,src,energy);
+}
+else if(dest=="Cafe")
+{
+energy+=25;
+src="Cafe";
+mainProj(g,wMatrix,src,energy);
+}
+else if(dest=="Recharge_Center")
+{
+energy+=50;
+src="Recharge Center";
+mainProj(g,wMatrix,src,energy);
+}
+else if(dest=="Parking"||dest=="Home")
+{
+cout<<"Thank you for playing!!";
+return;
+}
+else
+{
+src=dest;
+mainProj(g,wMatrix,src,energy);
+}
 }
 
 int main()
 {
     //FOR SUDOKU N=9;
-	graph g;
-	//temp3->cafe
-	//temp1->parking
-	//temp2->SC shopping complex
-	g.addEdge("Gaming_Center1","Shopping_Complex",10);
-	g.addEdge("Gaming_Center1","Cafe",12);
-	g.addEdge("Shopping_Complex","Recharge_Center",18);
-	g.addEdge("Cinema","Recharge_Center",7);
-	g.addEdge("Cinema","Food_Court",23);
-	g.addEdge("Food_Court","Home",34);
-	g.addEdge("Food_Court","Gaming_Center2",30);
-	g.addEdge("Home","Cafe",41);
-	g.addEdge("Parking","Cinema",25);
-	g.addEdge("Parking","Cafe",21);
-	int max=INT_MAX;
-	vector<vector<long long>> wMatrix{{0,41,max,max,max,max,34,max,max},
-								{41,0,12,max,max,max,max,max,21},
-								{max,12,0,10,max,max,max,max,max},
-								{max,max,10,0,18,max,max,max,max},
-								{max,max,max,18,0,7,max,max,max},
-								{max,max,max,max,7,0,23,max,25},
-								{34,max,max,max,max,23,0,30,max},
-								{max,max,max,max,max,max,30,0,max},
-								{max,21,max,max,max,25,max,max,0}};
-	floydWarshall(wMatrix);
-	mainProj(g,wMatrix,"Home",100);
-	return 0;
+graph g;
+//temp3->cafe
+//temp1->parking
+//temp2->SC shopping complex
+g.addEdge("Gaming_Center1","Shopping_Complex",10);
+g.addEdge("Gaming_Center1","Cafe",12);
+g.addEdge("Shopping_Complex","Recharge_Center",18);
+g.addEdge("Cinema","Recharge_Center",7);
+g.addEdge("Cinema","Food_Court",23);
+g.addEdge("Food_Court","Home",34);
+g.addEdge("Food_Court","Gaming_Center2",30);
+g.addEdge("Home","Cafe",41);
+g.addEdge("Parking","Cinema",25);
+g.addEdge("Parking","Cafe",21);
+int max=INT_MAX;
+vector<vector<long long>> wMatrix{{0,41,max,max,max,max,34,max,max},
+{41,0,12,max,max,max,max,max,21},
+{max,12,0,10,max,max,max,max,max},
+{max,max,10,0,18,max,max,max,max},
+{max,max,max,18,0,7,max,max,max},
+{max,max,max,max,7,0,23,max,25},
+{34,max,max,max,max,23,0,30,max},
+{max,max,max,max,max,max,30,0,max},
+{max,21,max,max,max,25,max,max,0}};
+floydWarshall(wMatrix);
+mainProj(g,wMatrix,"Home",100);
+return 0;
 }
